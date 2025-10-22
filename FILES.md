@@ -11,3 +11,4 @@ FILES CREATED
 - 2025-10-22: flake.nix (Nix dev environment definition)
 - 2025-10-22: flake.lock (Nix lockfile)
 - 2025-10-22: test (unit test runner script)
+- 2025-10-22: README.md (project overview and Pages link)
