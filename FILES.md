@@ -1,0 +1,13 @@
+FILES CREATED
+------------
+- 2025-10-22: FILES.md (file tracker)
+- 2025-10-22: FILES.md# (temporary editor artefact retained for transparency)
+- 2025-10-22: tests/generator_test.ts (initial TDD test harness)
+- 2025-10-22: tests/support/module_loader.ts (HTML module loader for tests)
+- 2025-10-22: tests/engine_test.ts (application service tests)
+- 2025-10-22: tests/ui_test.ts (presentation tests)
+- 2025-10-22: docs/index.html (single-page app and module exports for GitHub Pages)
+- 2025-10-22: flashcards.html -> docs/index.html (symlink for local convenience)
+- 2025-10-22: flake.nix (Nix dev environment definition)
+- 2025-10-22: flake.lock (Nix lockfile)
+- 2025-10-22: test (unit test runner script)

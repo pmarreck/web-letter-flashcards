@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<title>Web Flashcards</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Quicksand:wght@400;700&family=Libre+Baskerville:wght@400;700&family=EB+Garamond:wght@400;700&family=Tinos:wght@400;700&display=swap"
+		rel="stylesheet"
+	/>
+	<style>
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+			background-color: #ffffff;
+			color: #000000;
+		}
+
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 2rem;
+			touch-action: manipulation;
+		}
+
+		#card {
+			width: 100%;
+			text-align: center;
+			font-size: clamp(12rem, 36vw, 24rem);
+			line-height: 1.1;
+			font-weight: 400;
+			user-select: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			font-family: "Atkinson Hyperlegible", "Quicksand", "Libre Baskerville", "EB Garamond", "Tinos", serif;
+		}
+	</style>
+</head>
+<body>
+	<main id="app">
+		<div id="card" role="text" aria-live="polite">
+			Tap to begin
+		</div>
+	</main>
+	<script type="module">
+		const DEFAULT_SEED = () => Date.now();
+
+		export const WORD_LIST = [
+			"ba",
+			"be",
+			"bi",
+			"bo",
+			"bu",
+			"ca",
+			"ce",
+			"ci",
+			"co",
+			"cu",
+			"da",
+			"de",
+			"di",
+			"do",
+			"du",
+			"fa",
+			"fe",
+			"fi",
+			"fo",
+			"fu",
+			"ga",
+			"ge",
+			"gi",
+			"go",
+			"gu",
+			"ha",
+			"he",
+			"hi",
+			"ho",
+			"hu",
+			"ja",
+			"je",
+			"ji",
+			"jo",
+			"ju",
+			"ka",
+			"ke",
+			"ki",
+			"ko",
+			"ku",
+			"la",
+			"le",
+			"li",
+			"lo",
+			"lu",
+			"ma",
+			"me",
+			"mi",
+			"mo",
+			"mu",
+			"na",
+			"ne",
+			"ni",
+			"no",
+			"nu",
+			"pa",
+			"pe",
+			"pi",
+			"po",
+			"pu",
+			"ra",
+			"re",
+			"ri",
+			"ro",
+			"ru",
+			"sa",
+			"se",
+			"si",
+			"so",
+			"su",
+			"ta",
+			"te",
+			"ti",
+			"to",
+			"tu",
+			"va",
+			"ve",
+			"vi",
+			"vo",
+			"vu",
+			"wa",
+			"we",
+			"wi",
+			"wo",
+			"wu",
+			"ya",
+			"ye",
+			"yi",
+			"yo",
+			"yu",
+			"za",
+			"ze",
+			"zi",
+			"zo",
+			"zu",
+			"ab",
+			"ac",
+			"ad",
+			"af",
+			"ag",
+			"ah",
+			"aj",
+			"ak",
+			"al",
+			"am",
+			"an",
+			"ap",
+			"ar",
+			"as",
+			"at",
+			"av",
+			"aw",
+			"ay",
+			"az",
+			"eb",
+			"ec",
+			"ed",
+			"ef",
+			"eg",
+			"eh",
+			"ej",
+			"ek",
+			"el",
+			"em",
+			"en",
+			"ep",
+			"er",
+			"es",
+			"et",
+			"ev",
+			"ew",
+			"ey",
+			"ez",
+			"ib",
+			"ic",
+			"id",
+			"if",
+			"ig",
+			"ih",
+			"ij",
+			"ik",
+			"il",
+			"im",
+			"in",
+			"ip",
+			"ir",
+			"is",
+			"it",
+			"iv",
+			"iw",
+			"iy",
+			"iz",
+			"ob",
+			"oc",
+			"od",
+			"of",
+			"og",
+			"oh",
+			"oj",
+			"ok",
+			"ol",
+			"om",
+			"on",
+			"op",
+			"or",
+			"os",
+			"ot",
+			"ov",
+			"ow",
+			"oy",
+			"oz",
+			"ub",
+			"uc",
+			"ud",
+			"uf",
+			"ug",
+			"uh",
+			"uj",
+			"uk",
+			"ul",
+			"um",
+			"un",
+			"up",
+			"ur",
+			"us",
+			"ut",
+			"uv",
+			"uw",
+			"uy",
+			"uz",
+		];
+
+		function mulberry32(seed) {
+			let value = seed >>> 0;
+			return () => {
+				value += 0x6d2b79f5;
+				let t = value;
+				t = Math.imul(t ^ (t >>> 15), t | 1);
+				t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+				const result = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+				return result;
+			};
+		}
+
+		export const FONT_LIST = [
+			"Atkinson Hyperlegible",
+			"Quicksand",
+			"Libre Baskerville",
+			"EB Garamond",
+			"Tinos",
+		];
+
+		export function createCardGenerator({
+			words = WORD_LIST,
+			fonts = FONT_LIST,
+			seed = DEFAULT_SEED(),
+		}) {
+			if (!Array.isArray(words) || words.length === 0) {
+				throw new Error("words must be a non-empty array");
+			}
+			if (!Array.isArray(fonts) || fonts.length === 0) {
+				throw new Error("fonts must be a non-empty array");
+			}
+
+			const random = mulberry32(Number(seed) >>> 0);
+
+			return {
+				nextCard() {
+					const wordIndex = Math.floor(random() * words.length);
+					const word = words[wordIndex];
+					const isCapitalized = random() >= 0.5;
+					const fontIndex = Math.floor(random() * fonts.length);
+					const fontFamily = fonts[fontIndex];
+					const text = isCapitalized
+						? word[0].toUpperCase() + word.slice(1)
+						: word;
+					return {
+						word,
+						text,
+						fontFamily,
+						isCapitalized,
+					};
+				},
+			};
+		}
+
+		export function createFlashcardEngine({
+			words,
+			fonts,
+			seed,
+			onCard,
+		}) {
+			if (typeof onCard !== "function") {
+				throw new Error("onCard callback is required");
+			}
+
+			const generator = createCardGenerator({ words, fonts, seed });
+
+			return {
+				next() {
+					const card = generator.nextCard();
+					onCard(card);
+					return card;
+				},
+				start() {
+					return this.next();
+				},
+			};
+		}
+
+		export function renderCard(element, card) {
+			if (!element) {
+				throw new Error("element is required");
+			}
+
+			element.textContent = card.text;
+			if (element.style) {
+				element.style.fontFamily = card.fontFamily;
+			}
+		}
+
+		export function attachFlashcardApp({
+			document,
+			root,
+			words,
+			fonts,
+			seed,
+		}) {
+			if (!document) {
+				throw new Error("document is required");
+			}
+
+			const target =
+				root ??
+				(document.getElementById ? document.getElementById("card") : null);
+
+			if (!target) {
+				throw new Error("flashcard root element not found");
+			}
+
+			const engine = createFlashcardEngine({
+				words,
+				fonts,
+				seed,
+				onCard: (card) => renderCard(target, card),
+			});
+
+			const advance = () => {
+				engine.next();
+			};
+
+			const handleInteraction = (event) => {
+				if (event && typeof event.preventDefault === "function") {
+					event.preventDefault();
+				}
+				advance();
+			};
+
+			if (document.addEventListener) {
+				document.addEventListener("click", handleInteraction);
+				document.addEventListener("touchend", handleInteraction);
+			}
+
+			engine.start();
+
+			return {
+				advance,
+				detach() {
+					if (document.removeEventListener) {
+						document.removeEventListener("click", handleInteraction);
+						document.removeEventListener("touchend", handleInteraction);
+					}
+				},
+			};
+		}
+
+		export function bootstrapFlashcards(document = globalThis.document) {
+			if (!document) {
+				throw new Error("document is required for bootstrap");
+			}
+			return attachFlashcardApp({ document });
+		}
+
+		if (typeof document !== "undefined") {
+			bootstrapFlashcards(document);
+		}
+	</script>
+</body>
+</html>
